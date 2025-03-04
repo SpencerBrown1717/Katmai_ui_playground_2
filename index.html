@@ -1,0 +1,3404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Katmai Computing - NMR Quantum Workbench</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600&display=swap');
+        
+        :root {
+            --bg-color: #0b0a14;
+            --primary-purple: #7046c8;
+            --dark-purple: #4b2e83;
+            --light-purple: #9a78f8;
+            --panel-bg: #111020;
+            --panel-lighter: #181630;
+            --text-color: #ffffff;
+            --text-secondary: #ababbd;
+            --accent-color: #a156f7;
+            --gate-bg: #f8f8fa;
+            --gate-border: #ddd;
+            --grid-line: rgba(111, 66, 193, 0.3);
+            --grid-line-active: rgba(111, 66, 193, 0.6);
+            --grid-bg: rgba(14, 13, 26, 0.6);
+            --grid-cell-hover: rgba(111, 66, 193, 0.1);
+            --highlight: rgba(168, 85, 247, 0.5);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+            --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-normal: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --error-color: #ff5a5a;
+            --success-color: #4caf50;
+            --grid-marker-color: #9a78f8;
+            --help-bg: rgba(14, 13, 26, 0.95);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-size: 14px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+        
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            width: 100%;
+        }
+        
+        /* Header */
+        .app-header {
+            background-color: var(--panel-bg);
+            border-bottom: 1px solid rgba(111, 66, 193, 0.2);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 60px;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .back-button {
+            display: flex;
+            align-items: center;
+            color: var(--text-color);
+            text-decoration: none;
+            margin-right: 24px;
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0.8;
+            transition: var(--transition-fast);
+            padding: 6px 12px;
+            border-radius: 4px;
+        }
+        
+        .back-button:hover {
+            background-color: rgba(111, 66, 193, 0.15);
+            opacity: 1;
+        }
+        
+        .back-button i {
+            margin-right: 8px;
+        }
+        
+        .header-title {
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        
+        .header-icon {
+            margin-right: 10px;
+            font-size: 18px;
+            color: var(--accent-color);
+        }
+        
+        .header-right {
+            display: flex;
+            gap: 16px;
+        }
+        
+        .header-button {
+            display: flex;
+            align-items: center;
+            background: rgba(111, 66, 193, 0.1);
+            border: 1px solid rgba(111, 66, 193, 0.2);
+            color: var(--text-color);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: var(--transition-fast);
+        }
+        
+        .header-button:hover {
+            background-color: rgba(111, 66, 193, 0.2);
+            border-color: rgba(111, 66, 193, 0.3);
+        }
+        
+        .header-button i {
+            margin-right: 8px;
+            color: var(--light-purple);
+        }
+        
+        /* Subheader */
+        .subheader {
+            background-color: var(--panel-lighter);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(111, 66, 193, 0.2);
+            height: 48px;
+        }
+        
+        .subheader-title {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            letter-spacing: 0.3px;
+        }
+        
+        .subheader-icon {
+            margin-right: 10px;
+            font-size: 16px;
+            color: var(--accent-color);
+        }
+        
+        .settings-section {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .settings-button {
+            display: flex;
+            align-items: center;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        
+        .settings-button:hover {
+            color: var(--text-color);
+            background-color: rgba(111, 66, 193, 0.1);
+        }
+        
+        .settings-button i {
+            margin-left: 8px;
+            color: var(--light-purple);
+            font-size: 12px;
+        }
+        
+        /* NMR Specific Controls */
+        .nmr-controls {
+            background-color: var(--panel-bg);
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(111, 66, 193, 0.2);
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nmr-parameter {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            position: relative;
+        }
+
+        .nmr-parameter label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+
+        .param-help {
+            margin-left: 5px;
+            color: var(--light-purple);
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .param-tooltip {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: var(--help-bg);
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid var(--primary-purple);
+            width: 250px;
+            z-index: 100;
+            font-size: 12px;
+            color: var(--text-secondary);
+            box-shadow: var(--shadow-md);
+            display: none;
+        }
+
+        .param-help:hover + .param-tooltip {
+            display: block;
+        }
+
+        .nmr-parameter input {
+            background: rgba(111, 66, 193, 0.08);
+            border: 1px solid rgba(111, 66, 193, 0.2);
+            color: var(--text-color);
+            padding: 8px 10px;
+            border-radius: 6px;
+            width: 120px;
+            font-family: 'JetBrains Mono', monospace;
+            transition: var(--transition-fast);
+        }
+
+        .nmr-parameter input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(161, 86, 247, 0.15);
+        }
+
+        .error-message {
+            color: var(--error-color);
+            font-size: 11px;
+            margin-top: 3px;
+            display: none;
+        }
+
+        .error-message.visible {
+            display: block;
+        }
+
+        .pulse-sequence-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            margin-left: auto;
+        }
+
+        .pulse-sequence-controls button {
+            background: rgba(111, 66, 193, 0.1);
+            border: 1px solid rgba(111, 66, 193, 0.2);
+            color: var(--text-color);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pulse-sequence-controls button:hover {
+            background: rgba(111, 66, 193, 0.2);
+            border-color: rgba(111, 66, 193, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .pulse-sequence-controls button:focus {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        .pulse-sequence-controls button i {
+            color: var(--light-purple);
+        }
+        
+        /* Quantum Gate Toolbar */
+        .gate-toolbar {
+            background-color: var(--panel-bg);
+            padding: 12px 20px;
+            display: flex;
+            overflow-x: auto;
+            gap: 12px;
+            border-bottom: 1px solid rgba(111, 66, 193, 0.2);
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-purple) var(--panel-bg);
+        }
+        
+        .gate-toolbar::-webkit-scrollbar {
+            height: 6px;
+        }
+        
+        .gate-toolbar::-webkit-scrollbar-track {
+            background: var(--panel-bg);
+        }
+        
+        .gate-toolbar::-webkit-scrollbar-thumb {
+            background-color: var(--primary-purple);
+            border-radius: 6px;
+        }
+        
+        .gate-section {
+            display: flex;
+            gap: 8px;
+            padding-right: 16px;
+            margin-right: 16px;
+            border-right: 1px solid rgba(111, 66, 193, 0.2);
+        }
+        
+        .gate-section:last-child {
+            border-right: none;
+            padding-right: 0;
+            margin-right: 0;
+        }
+        
+        .gate-button {
+            height: 40px;
+            width: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--gate-bg);
+            border: 1px solid var(--gate-border);
+            border-radius: 6px;
+            color: #222;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: grab;
+            transition: var(--transition-fast);
+            position: relative;
+            box-shadow: var(--shadow-sm);
+            user-select: none;
+            -webkit-user-drag: element;
+            touch-action: none;
+        }
+        
+        .gate-button:hover {
+            box-shadow: 0 0 0 2px var(--accent-color);
+            transform: translateY(-1px);
+        }
+        
+        .gate-button:active {
+            cursor: grabbing;
+            transform: scale(0.95);
+        }
+        
+        .gate-button.selected {
+            background-color: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .gate-button.dragging {
+            opacity: 0.8;
+            transform: scale(1.05);
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        .gate-index {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: var(--panel-bg);
+            color: var(--text-secondary);
+            font-family: 'Inter', sans-serif;
+            font-size: 10px;
+            font-weight: 600;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(111, 66, 193, 0.3);
+        }
+
+        .gate-info {
+            position: absolute;
+            top: 48px;
+            left: 0;
+            width: 220px;
+            background-color: var(--help-bg);
+            border: 1px solid var(--primary-purple);
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            z-index: 100;
+            box-shadow: var(--shadow-md);
+            display: none;
+        }
+
+        .gate-info h4 {
+            color: var(--text-color);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .gate-info h4 span {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            background: var(--accent-color);
+            border-radius: 4px;
+            text-align: center;
+            line-height: 24px;
+            margin-right: 8px;
+            color: white;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .gate-info p {
+            margin-bottom: 5px;
+        }
+
+        .gate-info .matrix {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: rgba(111, 66, 193, 0.1);
+            padding: 5px;
+            border-radius: 4px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+        .gate-button:hover .gate-info {
+            display: block;
+        }
+        
+        /* Circuit Editor */
+        .circuit-editor {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(111, 66, 193, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(111, 66, 193, 0.05) 0%, transparent 20%);
+        }
+        
+        .circuit-grid {
+            flex: 1;
+            overflow: auto;
+            position: relative;
+            padding: 30px;
+            min-height: 400px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-purple) var(--bg-color);
+        }
+        
+        .circuit-grid::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        .circuit-grid::-webkit-scrollbar-track {
+            background: var(--bg-color);
+        }
+        
+        .circuit-grid::-webkit-scrollbar-thumb {
+            background-color: var(--primary-purple);
+            border-radius: 6px;
+        }
+        
+        .circuit-wrapper {
+            position: relative;
+            width: 100%;
+            min-width: 800px;
+            height: 300px;
+            background-color: var(--grid-bg);
+            border-radius: 8px;
+            box-shadow: 0 0 0 1px rgba(111, 66, 193, 0.2);
+            padding: 10px;
+            transition: var(--transition-normal);
+            margin-bottom: 20px;
+        }
+
+        .circuit-wrapper.highlight-ensemble {
+            box-shadow: 0 0 0 2px var(--accent-color), 0 0 20px rgba(161, 86, 247, 0.4);
+        }
+        
+        .grid-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+        }
+        
+        .horizontal-line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background-color: var(--grid-line);
+            transition: var(--transition-fast);
+        }
+
+        .horizontal-line.qubit-line {
+            background-color: var(--grid-line-active);
+            height: 2px;
+        }
+        
+        .vertical-line {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background-color: var(--grid-line);
+            transition: var(--transition-fast);
+        }
+
+        .vertical-line.active {
+            background-color: var(--grid-line-active);
+            width: 2px;
+        }
+        
+        .grid-marker {
+            position: absolute;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--grid-marker-color);
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            width: 24px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 3px;
+            padding: 1px 0;
+        }
+        
+        /* Grid cells for improved interaction */
+        .grid-cell {
+            position: absolute;
+            width: 50px;
+            height: 65px;
+            transition: var(--transition-fast);
+            border-radius: 4px;
+            z-index: 1;
+        }
+        
+        .grid-cell:hover {
+            background-color: var(--grid-cell-hover);
+            box-shadow: inset 0 0 0 1px var(--accent-color);
+            cursor: pointer;
+        }
+        
+        .qubit-label {
+            position: absolute;
+            left: 10px;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 3px 8px;
+            border-radius: 4px;
+            box-shadow: 0 0 0 1px rgba(111, 66, 193, 0.3);
+            z-index: 5;
+        }
+
+        .qubit-label.ensemble {
+            background-color: rgba(111, 66, 193, 0.3);
+            box-shadow: 0 0 0 1px rgba(161, 86, 247, 0.5), 0 0 10px rgba(161, 86, 247, 0.3);
+        }
+        
+        .state-label {
+            margin-left: 8px;
+            color: var(--light-purple);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            background-color: rgba(111, 66, 193, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            box-shadow: 0 0 0 1px rgba(111, 66, 193, 0.2);
+        }
+
+        .ensemble-badge {
+            margin-left: 8px;
+            font-size: 10px;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 1px 6px;
+            border-radius: 10px;
+            letter-spacing: 0.5px;
+        }
+        
+        .circuit-gate {
+            position: absolute;
+            height: 40px;
+            width: 40px;
+            background-color: var(--gate-bg);
+            border: 1px solid var(--gate-border);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #222;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: grab;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-fast);
+            z-index: 10;
+            user-select: none;
+            transform-origin: center center;
+        }
+        
+        .circuit-gate:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .circuit-gate:active {
+            cursor: grabbing;
+        }
+        
+        .circuit-gate.selected {
+            box-shadow: 0 0 0 3px var(--accent-color), var(--shadow-md);
+            z-index: 20;
+            animation: pulse 2s infinite;
+        }
+
+        .circuit-gate.nmr-gate {
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-purple));
+            color: white;
+            border: none;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 3px rgba(161, 86, 247, 0.7), var(--shadow-md); }
+            50% { box-shadow: 0 0 0 3px rgba(161, 86, 247, 0.3), var(--shadow-md); }
+            100% { box-shadow: 0 0 0 3px rgba(161, 86, 247, 0.7), var(--shadow-md); }
+        }
+        
+        .circuit-gate.dragging {
+            opacity: 0.8;
+            z-index: 1000;
+            transform: scale(1.1);
+        }
+        
+        .gate-connection {
+            position: absolute;
+            background-color: var(--accent-color);
+            pointer-events: none;
+            box-shadow: 0 0 8px rgba(161, 86, 247, 0.5);
+            z-index: 9;
+        }
+        
+        .gate-connection.vertical {
+            width: 3px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .drop-indicator {
+            position: absolute;
+            width: 46px;
+            height: 46px;
+            border: 2px dashed var(--accent-color);
+            border-radius: 8px;
+            background-color: rgba(161, 86, 247, 0.15);
+            display: none;
+            z-index: 5;
+            animation: pulseDrop 1.5s infinite;
+        }
+        
+        @keyframes pulseDrop {
+            0% { box-shadow: 0 0 0 0 rgba(161, 86, 247, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(161, 86, 247, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(161, 86, 247, 0); }
+        }
+
+        /* NMR Ensemble Visualization */
+        .ensemble-visualization {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            width: 200px;
+            height: 200px;
+            background-color: rgba(14, 13, 26, 0.8);
+            border-radius: 8px;
+            box-shadow: 0 0 0 1px rgba(111, 66, 193, 0.3);
+            overflow: hidden;
+            z-index: 15;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ensemble-viz-header {
+            padding: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(111, 66, 193, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .ensemble-viz-header i {
+            color: var(--accent-color);
+            margin-right: 5px;
+        }
+
+        .ensemble-viz-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .ensemble-spins {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            transform-style: preserve-3d;
+            animation: spin 20s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotateY(0deg) rotateX(20deg); }
+            100% { transform: rotateY(360deg) rotateX(20deg); }
+        }
+
+        .ensemble-spin {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background-color: var(--light-purple);
+            border-radius: 50%;
+            transform-style: preserve-3d;
+            box-shadow: 0 0 5px var(--light-purple);
+        }
+
+        .ensemble-arrow {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 0;
+            height: 30px;
+            transform-origin: top;
+            transform: rotate3d(var(--x, 0), var(--y, 0), var(--z, 1), var(--angle, 0deg));
+        }
+
+        .ensemble-arrow::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -1px;
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--accent-color), transparent);
+        }
+        
+        /* Frequency Controls */
+        .frequency-controls {
+            background-color: var(--panel-bg);
+            padding: 16px 20px;
+            border-top: 1px solid rgba(111, 66, 193, 0.2);
+        }
+        
+        .frequency-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        
+        .frequency-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+        }
+        
+        .frequency-title i {
+            margin-right: 8px;
+            color: var(--accent-color);
+        }
+
+        .frequency-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .frequency-action {
+            font-size: 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .frequency-action:hover {
+            color: var(--text-color);
+        }
+
+        .frequency-action i {
+            margin-right: 4px;
+        }
+        
+        .frequency-row {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .frequency-label {
+            flex: 0 0 180px;
+            display: flex;
+            align-items: center;
+            font-size: 13px;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+        
+        .frequency-value {
+            margin-left: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--light-purple);
+            background-color: rgba(111, 66, 193, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        
+        .phase-control {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .phase-slider {
+            flex: 1;
+            height: 8px;
+            background: linear-gradient(to right, 
+                var(--dark-purple), 
+                var(--primary-purple), 
+                var(--light-purple), 
+                var(--accent-color));
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+        
+        .phase-min, .phase-max {
+            flex: 0 0 30px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .phase-thumb {
+            position: absolute;
+            top: 50%;
+            left: 30%;
+            width: 16px;
+            height: 16px;
+            background-color: white;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            cursor: pointer;
+        }
+        
+        /* Pulse Sequence Visualization */
+        .pulse-visualization-container {
+            background-color: var(--panel-bg);
+            border-top: 1px solid rgba(111, 66, 193, 0.2);
+        }
+        
+        .pulse-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            border-bottom: 1px solid rgba(111, 66, 193, 0.1);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        
+        .pulse-title {
+            display: flex;
+            align-items: center;
+        }
+        
+        .pulse-title i {
+            margin-right: 8px;
+            color: var(--accent-color);
+        }
+        
+        .pulse-controls {
+            display: flex;
+            gap: 16px;
+        }
+        
+        .pulse-control {
+            display: flex;
+            align-items: center;
+            font-size: 11px;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+        
+        .pulse-control:hover {
+            color: var(--text-color);
+        }
+        
+        .pulse-control i {
+            margin-right: 5px;
+        }
+        
+        .pulse-visualization {
+            height: 80px;
+            display: flex;
+            overflow: hidden;
+        }
+        
+        .channel-label {
+            flex: 0 0 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--light-purple);
+            border-right: 1px solid rgba(111, 66, 193, 0.2);
+            background-color: rgba(111, 66, 193, 0.05);
+        }
+        
+        .pulse-sequence {
+            flex: 1;
+            display: flex;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .pulse-block {
+            position: absolute;
+            height: 50%;
+            top: 25%;
+            background: linear-gradient(to right, 
+                var(--primary-purple) 0%, 
+                var(--light-purple) 100%);
+            opacity: 0.8;
+            transition: var(--transition-normal);
+            border-radius: 4px;
+        }
+        
+        .pulse-block:hover {
+            opacity: 1;
+            height: 60%;
+            top: 20%;
+            box-shadow: 0 0 10px rgba(111, 66, 193, 0.5);
+        }
+
+        .pulse-block.delay {
+            background: rgba(171, 171, 189, 0.3);
+            opacity: 0.5;
+        }
+
+        .pulse-block.π {
+            background: linear-gradient(to right, 
+                var(--accent-color) 0%, 
+                var(--primary-purple) 100%);
+        }
+
+        .pulse-block.π2 {
+            background: linear-gradient(to right, 
+                var(--light-purple) 0%, 
+                var(--primary-purple) 100%);
+        }
+
+        .pulse-block.π4 {
+            background: linear-gradient(to right, 
+                var(--light-purple) 0%, 
+                var(--accent-color) 100%);
+            height: 35%;
+            top: 33%;
+        }
+
+        .time-marker {
+            position: absolute;
+            bottom: 0;
+            width: 1px;
+            height: 6px;
+            background-color: var(--text-secondary);
+        }
+
+        .time-label {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 9px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        /* Spin Echo Visualization */
+        .spin-echo-visualization {
+            background-color: var(--panel-lighter);
+            padding: 16px 20px;
+            margin: 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .spin-echo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .spin-echo-header i {
+            color: var(--accent-color);
+            margin-right: 8px;
+        }
+
+        .spin-echo-timing {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .spin-echo-timing label {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .spin-echo-timing input {
+            background: rgba(111, 66, 193, 0.08);
+            border: 1px solid rgba(111, 66, 193, 0.2);
+            color: var(--text-color);
+            padding: 6px 10px;
+            border-radius: 6px;
+            width: 80px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .spin-echo-timing input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .spin-echo-diagram {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 16px;
+            background: rgba(111, 66, 193, 0.05);
+            border-radius: 6px;
+            position: relative;
+        }
+
+        .spin-echo-pulse {
+            height: 30px;
+            background: var(--primary-purple);
+            border-radius: 4px;
+            position: relative;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .spin-echo-pulse.π2 {
+            width: 20px;
+            background: linear-gradient(to bottom, var(--light-purple), var(--primary-purple));
+        }
+
+        .spin-echo-pulse.π {
+            width: 40px;
+            background: linear-gradient(to bottom, var(--accent-color), var(--primary-purple));
+        }
+
+        .spin-echo-delay {
+            height: 2px;
+            background: var(--text-secondary);
+            flex-grow: 1;
+            opacity: 0.5;
+        }
+
+        .spin-echo-label {
+            position: absolute;
+            top: -16px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Educational Help Panel */
+        .help-panel {
+            position: absolute;
+            right: 20px;
+            bottom: 20px;
+            width: 300px;
+            background-color: var(--panel-bg);
+            border-radius: 8px;
+            border: 1px solid rgba(111, 66, 193, 0.3);
+            box-shadow: var(--shadow-md);
+            z-index: 50;
+            font-size: 13px;
+            overflow: hidden;
+            transition: var(--transition-normal);
+            transform: translateY(0);
+        }
+
+        .help-panel.collapsed {
+            transform: translateY(calc(100% - 40px));
+        }
+
+        .help-panel-header {
+            padding: 10px 15px;
+            background-color: var(--panel-lighter);
+            border-bottom: 1px solid rgba(111, 66, 193, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .help-panel-title {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .help-panel-title i {
+            margin-right: 8px;
+            color: var(--accent-color);
+        }
+
+        .help-panel-content {
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .help-section {
+            margin-bottom: 15px;
+        }
+
+        .help-section h3 {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: var(--light-purple);
+        }
+
+        .help-section p {
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .help-section ul {
+            list-style: none;
+            padding-left: 20px;
+        }
+
+        .help-section li {
+            position: relative;
+            padding-left: 15px;
+            margin-bottom: 5px;
+            color: var(--text-secondary);
+        }
+
+        .help-section li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--accent-color);
+        }
+        
+        /* Footer */
+        .app-footer {
+            background-color: var(--panel-bg);
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid rgba(111, 66, 193, 0.2);
+        }
+        
+        .footer-left {
+            display: flex;
+            gap: 16px;
+        }
+        
+        .footer-right {
+            display: flex;
+            gap: 16px;
+        }
+        
+        .footer-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+        
+        .footer-button.secondary {
+            background-color: rgba(111, 66, 193, 0.1);
+            color: var(--text-color);
+            border: 1px solid rgba(111, 66, 193, 0.2);
+        }
+        
+        .footer-button.secondary:hover {
+            background-color: rgba(111, 66, 193, 0.2);
+            border-color: rgba(111, 66, 193, 0.3);
+            transform: translateY(-1px);
+        }
+        
+        .footer-button.primary {
+            background-color: var(--primary-purple);
+            color: white;
+            border: none;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .footer-button.primary:hover {
+            background-color: var(--accent-color);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+        
+        .footer-button i {
+            margin-right: 8px;
+        }
+        
+        /* Notifications and Modals */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: rgba(111, 66, 193, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s ease-in-out;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            max-width: 400px;
+        }
+
+        .notification.error {
+            background-color: rgba(220, 53, 69, 0.9);
+        }
+
+        .notification.success {
+            background-color: rgba(40, 167, 69, 0.9);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background-color: var(--panel-bg);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: var(--shadow-md);
+            max-width: 500px;
+            width: 100%;
+            border: 1px solid rgba(111, 66, 193, 0.2);
+        }
+        
+        /* Custom tooltip */
+        [data-tooltip] {
+            position: relative;
+        }
+        
+        [data-tooltip]:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            font-size: 12px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            white-space: nowrap;
+            z-index: 100;
+            margin-bottom: 5px;
+        }
+        
+        /* Collapsible Panels */
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            cursor: pointer;
+            user-select: none;
+            border-bottom: 1px solid rgba(111, 66, 193, 0.2);
+            transition: var(--transition-fast);
+        }
+        
+        .panel-header:hover {
+            background-color: rgba(111, 66, 193, 0.1);
+        }
+        
+        .panel-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+        }
+        
+        .panel-title i {
+            margin-right: 8px;
+            color: var(--accent-color);
+        }
+        
+        .panel-toggle {
+            color: var(--text-secondary);
+            transition: transform 0.3s ease;
+        }
+        
+        .panel-toggle.collapsed {
+            transform: rotate(-180deg);
+        }
+        
+        /* Panel Content */
+        .panel-content {
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+            max-height: 500px; /* Default expanded height */
+        }
+        
+        .panel-content.collapsed {
+            max-height: 0;
+            border-bottom: none;
+            padding: 0;
+        }
+        
+        /* Main view toggle */
+        .expand-grid-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--primary-purple);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition-fast);
+            z-index: 100;
+        }
+        
+        .expand-grid-button:hover {
+            background-color: var(--accent-color);
+            transform: scale(1.1);
+        }
+        
+        .expand-grid-button i {
+            font-size: 20px;
+        }
+        
+        .full-grid-mode .frequency-controls,
+        .full-grid-mode .pulse-visualization-container,
+        .full-grid-mode .spin-echo-visualization,
+        .full-grid-mode .gate-toolbar,
+        .full-grid-mode .nmr-controls {
+            display: none;
+        }
+        
+        .full-grid-mode .circuit-editor {
+            height: calc(100vh - 110px);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1024px) {
+            .nmr-controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .pulse-sequence-controls {
+                margin-left: 0;
+                justify-content: flex-start;
+                width: 100%;
+            }
+            
+            .frequency-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .footer-left, .footer-right {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .gate-toolbar {
+                flex-wrap: wrap;
+            }
+            
+            .gate-section {
+                margin-bottom: 10px;
+            }
+            
+            .circuit-grid {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .ensemble-visualization {
+                position: static;
+                margin: 20px auto;
+                width: 90%;
+                max-width: 300px;
+            }
+        }
+        
+        /* Mobile view adjustments */
+        @media (max-width: 768px) {
+            .header-title {
+                font-size: 14px;
+            }
+            
+            .back-button {
+                margin-right: 10px;
+            }
+            
+            .header-button {
+                padding: 5px 8px;
+                font-size: 12px;
+            }
+            
+            .header-button i {
+                margin-right: 4px;
+            }
+            
+            .subheader {
+                flex-direction: column;
+                height: auto;
+                gap: 10px;
+                padding: 10px;
+            }
+            
+            .settings-section {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .circuit-wrapper {
+                padding-bottom: 40px;
+                overflow-x: auto;
+            }
+            
+            .help-panel {
+                width: 100%;
+                left: 0;
+                right: 0;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- App Header -->
+        <div class="app-header">
+            <div class="header-left">
+                <a href="#" class="back-button" aria-label="Go back to projects">
+                    <i class="fas fa-chevron-left" aria-hidden="true"></i> Back to Projects
+                </a>
+                <div class="header-title">
+                    <i class="fas fa-microchip header-icon" aria-hidden="true"></i>
+                    Katmai Quantum Workbench
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="header-button" data-tooltip="Configure Hardware" aria-label="Configure Hardware">
+                    <i class="fas fa-tv" aria-hidden="true"></i> Equipment
+                </button>
+                <button class="header-button" data-tooltip="Export Circuit" aria-label="Export Circuit">
+                    <i class="fas fa-file-export" aria-hidden="true"></i> Export
+                </button>
+                <button class="header-button" id="fullGridToggle" data-tooltip="Maximize Grid View" aria-label="Toggle Full Grid View">
+                    <i class="fas fa-expand-alt" aria-hidden="true"></i> Maximize Grid
+                </button>
+            </div>
+        </div>
+        
+        <!-- Subheader -->
+        <div class="subheader">
+            <div class="subheader-title">
+                <i class="fas fa-atom subheader-icon" aria-hidden="true"></i>
+                NMR Quantum Computing
+            </div>
+            <div class="settings-section">
+                <div class="settings-button" data-tooltip="Configure NMR Parameters" role="button" tabindex="0">
+                    NMR Parameters <i class="fas fa-cog" aria-hidden="true"></i>
+                </div>
+                <div class="settings-button" data-tooltip="Edit Pulse Sequence" role="button" tabindex="0">
+                    Pulse Sequence <i class="fas fa-sliders-h" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- NMR Specific Controls -->
+        <div class="nmr-panel panel">
+            <div class="panel-header" id="nmr-panel-header">
+                <div class="panel-title">
+                    <i class="fas fa-microscope" aria-hidden="true"></i> NMR Controls
+                </div>
+                <div class="panel-toggle">
+                    <i class="fas fa-chevron-up" aria-hidden="true"></i>
+                </div>
+            </div>
+            <div class="panel-content" id="nmr-panel-content">
+                <div class="nmr-controls">
+                    <div class="nmr-parameter">
+                        <label for="larmorFreq">
+                            Larmor Frequency (MHz)
+                            <i class="fas fa-question-circle param-help"></i>
+                        </label>
+                        <div class="param-tooltip">
+                            The precession frequency of nuclear spins in the external magnetic field. Higher frequencies indicate stronger magnetic fields and faster spin precession.
+                        </div>
+                        <input type="number" id="larmorFreq" value="500" step="0.1" min="0">
+                        <div class="error-message">Must be positive</div>
+                    </div>
+                    <div class="nmr-parameter">
+                        <label for="pulseDuration">
+                            Pulse Duration (μs)
+                            <i class="fas fa-question-circle param-help"></i>
+                        </label>
+                        <div class="param-tooltip">
+                            The duration of RF pulses applied to the ensemble qubits. Controls the rotation angle of the quantum state on the Bloch sphere.
+                        </div>
+                        <input type="number" id="pulseDuration" value="10" step="0.1" min="0">
+                        <div class="error-message">Must be positive</div>
+                    </div>
+                    <div class="nmr-parameter">
+                        <label for="relaxationT1">
+                            Relaxation Time T1 (s)
+                            <i class="fas fa-question-circle param-help"></i>
+                        </label>
+                        <div class="param-tooltip">
+                            Longitudinal (spin-lattice) relaxation time. Characterizes how quickly spins return to thermal equilibrium along z-axis after excitation.
+                        </div>
+                        <input type="number" id="relaxationT1" value="1.0" step="0.1" min="0">
+                        <div class="error-message">Must be positive</div>
+                    </div>
+                    <div class="nmr-parameter">
+                        <label for="relaxationT2">
+                            Relaxation Time T2 (s)
+                            <i class="fas fa-question-circle param-help"></i>
+                        </label>
+                        <div class="param-tooltip">
+                            Transverse (spin-spin) relaxation time. Characterizes how quickly spins lose phase coherence in the xy-plane, limiting qubit coherence time.
+                        </div>
+                        <input type="number" id="relaxationT2" value="0.5" step="0.1" min="0">
+                        <div class="error-message">Must be positive and less than T1</div>
+                    </div>
+                    <div class="pulse-sequence-controls">
+                        <button onclick="addPulse('π/2')" aria-label="Add π/2 Pulse">
+                            <i class="fas fa-wave-square" aria-hidden="true"></i> π/2 Pulse
+                        </button>
+                        <button onclick="addPulse('π')" aria-label="Add π Pulse">
+                            <i class="fas fa-wave-square" aria-hidden="true"></i> π Pulse
+                        </button>
+                        <button onclick="addPulse('π/4')" aria-label="Add π/4 Pulse">
+                            <i class="fas fa-wave-square" aria-hidden="true"></i> π/4 Pulse
+                        </button>
+                        <button onclick="addDelay()" aria-label="Add Delay">
+                            <i class="fas fa-pause" aria-hidden="true"></i> Delay
+                        </button>
+                        <button onclick="addSpinEcho()" aria-label="Add Spin Echo">
+                            <i class="fas fa-sync-alt" aria-hidden="true"></i> Spin Echo
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quantum Gate Toolbar -->
+        <div class="gates-panel panel">
+            <div class="panel-header" id="gates-panel-header">
+                <div class="panel-title">
+                    <i class="fas fa-puzzle-piece" aria-hidden="true"></i> Quantum Gates
+                </div>
+                <div class="panel-toggle">
+                    <i class="fas fa-chevron-up" aria-hidden="true"></i>
+                </div>
+            </div>
+            <div class="panel-content" id="gates-panel-content">
+                <div class="gate-toolbar" role="toolbar" aria-label="Quantum Gates">
+                    <div class="gate-section">
+                        <div class="gate-button selected" data-tooltip="Hadamard Gate" role="button" tabindex="0" aria-label="Hadamard Gate">
+                            H
+                            <span class="gate-index">1</span>
+                            <div class="gate-info">
+                                <h4><span>H</span> Hadamard Gate</h4>
+                                <p>Creates superposition by rotating between X and Z basis.</p>
+                                <div class="matrix">
+                                    [1  1]<br>
+                                    [1 -1] × 1/√2
+                                </div>
+                                <p>Maps |0⟩ → (|0⟩+|1⟩)/√2 and |1⟩ → (|0⟩-|1⟩)/√2</p>
+                            </div>
+                        </div>
+                        <div class="gate-button" data-tooltip="Identity Gate" role="button" tabindex="0" aria-label="Identity Gate">
+                            I
+                            <span class="gate-index">2</span>
+                            <div class="gate-info">
+                                <h4><span>I</span> Identity Gate</h4>
+                                <p>Does nothing to the qubit state.</p>
+                                <div class="matrix">
+                                    [1 0]<br>
+                                    [0 1]
+                                </div>
+                                <p>Used as a placeholder or for timing alignment.</p>
+                            </div>
+                        </div>
+                        <div class="gate-button" data-tooltip="Pauli-X Gate" role="button" tabindex="0" aria-label="Pauli-X Gate">
+                            X
+                            <span class="gate-index">3</span>
+                            <div class="gate-info">
+                                <h4><span>X</span> Pauli-X Gate</h4>
+                                <p>Quantum equivalent of classical NOT gate.</p>
+                                <div class="matrix">
+                                    [0 1]<br>
+                                    [1 0]
+                                </div>
+                                <p>Flips |0⟩ → |1⟩ and |1⟩ → |0⟩. 180° rotation around X-axis.</p>
+                            </div>
+                        </div>
+                        <div class="gate-button" data-tooltip="Pauli-Y Gate" role="button" tabindex="0" aria-label="Pauli-Y Gate">
+                            Y
+                            <span class="gate-index">4</span>
+                            <div class="gate-info">
+                                <h4><span>Y</span> Pauli-Y Gate</h4>
+                                <p>Rotation around Y-axis of the Bloch sphere.</p>
+                                <div class="matrix">
+                                    [0 -i]<br>
+                                    [i  0]
+                                </div>
+                                <p>Maps |0⟩ → i|1⟩ and |1⟩ → -i|0⟩. 180° rotation around Y-axis.</p>
+                            </div>
+                        </div>
+                        <div class="gate-button" data-tooltip="Pauli-Z Gate" role="button" tabindex="0" aria-label="Pauli-Z Gate">
+                            Z
+                            <span class="gate-index">5</span>
+                            <div class="gate-info">
+                                <h4><span>Z</span> Pauli-Z Gate</h4>
+                                <p>Phase flip gate. 180° rotation around Z-axis.</p>
+                                <div class="matrix">
+                                    [1  0]<br>
+                                    [0 -1]
+                                </div>
+                                <p>Leaves |0⟩ unchanged and maps |1⟩ → -|1⟩.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="gate-section">
+                        <div class="gate-button" data-tooltip="Square Root of X" role="button" tabindex="0" aria-label="Square Root of X Gate">
+                            <span style="font-size: 12px;">√X</span>
+                            <span class="gate-index">6</span>
+                            <div class="gate-info">
+                                <h4><span>√X</span> Square Root of X</h4>
+                                <p>90° rotation around X-axis. Two applications equal an X gate.</p>
+                                <div class="matrix">
+                                    [1+i 1-i]<br>
+                                    [1-i 1+i] × 1/2
+                                </div>
+                                <p>Common in NMR quantum computing as a π/2 pulse.</p>
+                            </div>
+                        </div>
+                        <div class="gate-button" data-tooltip="Square Root of Y" role="button" tabindex="0" aria-label="Square Root of Y Gate">
+                            <span style="font-size: 12px;">√Y</span>
+                            <span class="gate-index">7</span>
+                            <div class="gate-info">
+                                <h4><span>√Y</span> Square Root of Y</h4>
+                                <p>90° rotation around Y-axis. Two applications equal a Y gate.</p>
+                                <p>Important for constructing arbitrary single-qubit rotations.</p>
+                            </div>
+                        </div>
+                        <div class="gate-button" data-tooltip="Square Root of Z" role="button" tabindex="0" aria-label="Square Root of Z Gate">
+                            <span style="font-size: 12px;">√Z</span>
+                            <span class="gate-index">8</span>
+                            <div class="gate-info">
+                                <h4><span>√Z</span> Square Root of Z</h4>
+                                <p>90° rotation around Z-axis. Also known as the S or Phase gate.</p>
+                                <div class="matrix">
+                                    [1 0]<br>
+                                    [0 i]
+                                </div>
+                                <p>Introduces a 90° phase shift.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="gate-section">
+                        <div class="gate-button" data-tooltip="Rotation around X" role="button" tabindex="0" aria-label="Rotation around X Gate">
+                            Rx
+                            <span class="gate-index">9</span>
+                            <div class="gate-info">
+                                <h4><span>Rx</span> X-Rotation</h4>
+                                <p>Parameterized rotation around X-axis by any angle θ.</p>
+                                <p>In NMR, corresponds to RF pulse with specific duration and phase.</p>
+                            </div>
+                        </div>
+                        <div class="gate-button" data-tooltip="Rotation around Y" role="button" tabindex="0" aria-label="Rotation around Y Gate">
+                            Ry
+                            <span class="gate-index">10</span>
+                            <div class="gate-info">
+                                <h4><span>Ry</span> Y-Rotation</h4>
+                                <p>Parameterized rotation around Y-axis by any angle θ.</p>
+                                <p>Essential component for arbitrary state preparation.</p>
+                            </div>
+                        </div>
+                        <div class="gate-button" data-tooltip="Rotation around Z" role="button" tabindex="0" aria-label="Rotation around Z Gate">
+                            Rz
+                            <span class="gate-index">11</span>
+                            <div class="gate-info">
+                                <h4><span>Rz</span> Z-Rotation</h4>
+                                <p>Parameterized rotation around Z-axis by any angle θ.</p>
+                                <p>Often implemented using virtual Z-rotations in NMR systems.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="gate-section">
+                        <div class="gate-button" data-tooltip="T Gate" role="button" tabindex="0" aria-label="T Gate">
+                            T
+                            <span class="gate-index">12</span>
+                            <div class="gate-info">
+                                <h4><span>T</span> T Gate</h4>
+                                <p>45° phase rotation. Fourth root of Z gate.</p>
+                                <div class="matrix">
+                                    [1 0]<br>
+                                    [0 e^(iπ/4)]
+                                </div>
+                                <p>Critical for universal quantum computation.</p>
+                            </div>
+                        </div>
+                        <div class="gate-button" data-tooltip="T Dagger Gate" role="button" tabindex="0" aria-label="T Dagger Gate">
+                            T†
+                            <span class="gate-index">13</span>
+                            <div class="gate-info">
+                                <h4><span>T†</span> T-Dagger Gate</h4>
+                                <p>Inverse of T gate. -45° phase rotation.</p>
+                                <p>Used to construct fault-tolerant quantum circuits.</p>
+                            </div>
+                        </div>
+                        <div class="gate-button" data-tooltip="S Gate (Phase)" role="button" tabindex="0" aria-label="S Gate">
+                            S
+                            <span class="gate-index">14</span>
+                            <div class="gate-info">
+                                <h4><span>S</span> S Gate</h4>
+                                <p>90° phase rotation. Same as √Z gate.</p>
+                                <div class="matrix">
+                                    [1 0]<br>
+                                    [0 i]
+                                </div>
+                                <p>Used with H gates to construct T gates in some architectures.</p>
+                            </div>
+                        </div>
+                        <div class="gate-button" data-tooltip="S Dagger Gate" role="button" tabindex="0" aria-label="S Dagger Gate">
+                            S†
+                            <span class="gate-index">15</span>
+                            <div class="gate-info">
+                                <h4><span>S†</span> S-Dagger Gate</h4>
+                                <p>Inverse of S gate. -90° phase rotation.</p>
+                                <p>Useful for undoing unwanted phase shifts.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="gate-section">
+                        <div class="gate-button" data-tooltip="Controlled NOT Gate" role="button" tabindex="0" aria-label="Controlled NOT Gate">
+                            CX
+                            <span class="gate-index">16</span>
+                            <div class="gate-info">
+                                <h4><span>CX</span> CNOT Gate</h4>
+                                <p>Two-qubit gate that flips a target qubit if control qubit is |1⟩.</p>
+                                <p>In NMR, implemented using J-coupling between nuclear spins.</p>
+                            </div>
+                        </div>
+                        <div class="gate-button" data-tooltip="Controlled Z Gate" role="button" tabindex="0" aria-label="Controlled Z Gate">
+                            CZ
+                            <span class="gate-index">17</span>
+                            <div class="gate-info">
+                                <h4><span>CZ</span> Controlled-Z</h4>
+                                <p>Two-qubit gate that applies Z to target qubit if control is |1⟩.</p>
+                                <p>Symmetric gate with phase shift only when both qubits are |1⟩.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Circuit Editor Area -->
+        <div class="circuit-editor">
+            <div class="circuit-grid">
+                <div class="circuit-wrapper highlight-ensemble" role="application" aria-label="Quantum Circuit Editor">
+                    <div class="grid-lines">
+                        <!-- Horizontal grid lines -->
+                        <div class="horizontal-line qubit-line" style="top: 60px;"></div>
+                        <div class="horizontal-line qubit-line" style="top: 125px;"></div>
+                        <div class="horizontal-line qubit-line" style="top: 190px;"></div>
+                        <div class="horizontal-line qubit-line" style="top: 255px;"></div>
+                        
+                        <!-- Vertical grid lines - step size of 50px -->
+                        <div class="vertical-line" style="left: 175px;"></div>
+                        <div class="vertical-line" style="left: 225px;"></div>
+                        <div class="vertical-line" style="left: 275px;"></div>
+                        <div class="vertical-line active" style="left: 325px;"></div>
+                        <div class="vertical-line" style="left: 375px;"></div>
+                        <div class="vertical-line" style="left: 425px;"></div>
+                        <div class="vertical-line" style="left: 475px;"></div>
+                        <div class="vertical-line" style="left: 525px;"></div>
+                        <div class="vertical-line" style="left: 575px;"></div>
+                        <div class="vertical-line" style="left: 625px;"></div>
+                        <div class="vertical-line" style="left: 675px;"></div>
+                        <div class="vertical-line" style="left: 725px;"></div>
+                    </div>
+                    
+                    <!-- Interactive grid cells -->
+                    <div id="grid-cell-container">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                    
+                    <!-- Grid position markers -->
+                    <div class="grid-marker" style="left: 175px; top: 270px;">1</div>
+                    <div class="grid-marker" style="left: 225px; top: 270px;">2</div>
+                    <div class="grid-marker" style="left: 275px; top: 270px;">3</div>
+                    <div class="grid-marker" style="left: 325px; top: 270px;">4</div>
+                    <div class="grid-marker" style="left: 375px; top: 270px;">5</div>
+                    <div class="grid-marker" style="left: 425px; top: 270px;">6</div>
+                    <div class="grid-marker" style="left: 475px; top: 270px;">7</div>
+                    <div class="grid-marker" style="left: 525px; top: 270px;">8</div>
+                    <div class="grid-marker" style="left: 575px; top: 270px;">9</div>
+                    <div class="grid-marker" style="left: 625px; top: 270px;">10</div>
+                    <div class="grid-marker" style="left: 675px; top: 270px;">11</div>
+                    <div class="grid-marker" style="left: 725px; top: 270px;">12</div>
+                    
+                    <!-- Qubit labels -->
+                    <div class="qubit-label ensemble" style="top: 40px;">Q0 <span class="state-label">|0⟩</span> <span class="ensemble-badge">NMR</span></div>
+                    <div class="qubit-label" style="top: 105px;">Q1 <span class="state-label">|0⟩</span></div>
+                    <div class="qubit-label" style="top: 170px;">Q2 <span class="state-label">|0⟩</span></div>
+                    <div class="qubit-label ensemble" style="top: 235px;">Q3 <span class="state-label">|0⟩</span> <span class="ensemble-badge">NMR</span></div>
+                    
+                    <!-- Added gates -->
+                    <div class="circuit-gate" style="top: 40px; left: 175px;" role="button" tabindex="0" aria-label="Hadamard Gate on Qubit 0">H</div>
+                    <div class="circuit-gate nmr-gate" style="top: 40px; left: 225px;" role="button" tabindex="0" aria-label="X Gate on Qubit 0">X</div>
+                    <div class="circuit-gate selected" style="top: 105px; left: 225px;" role="button" tabindex="0" aria-label="Z Gate on Qubit 1">Z</div>
+                    <div class="circuit-gate nmr-gate" style="top: 235px; left: 325px;" role="button" tabindex="0" aria-label="Rx Gate on Qubit 3">Rx</div>
+                    
+                    <!-- CNOT connection line -->
+                    <div class="gate-connection vertical" style="top: 40px; left: 175px; height: 65px;"></div>
+                    <div class="circuit-gate" style="top: 105px; left: 175px;" role="button" tabindex="0" aria-label="Controlled X Gate on Qubit 1">CX</div>
+                    
+                    <!-- Drop indicator (visible during drag) -->
+                    <div class="drop-indicator" style="top: 170px; left: 275px;"></div>
+                    
+                    <!-- NMR Ensemble Visualization -->
+                    <div class="ensemble-visualization">
+                        <div class="ensemble-viz-header">
+                            <div><i class="fas fa-atom"></i> NMR Ensemble View</div>
+                            <div class="ensemble-viz-controls">
+                                <i class="fas fa-expand-arrows-alt" style="cursor: pointer; margin-left: 10px;"></i>
+                            </div>
+                        </div>
+                        <div class="ensemble-viz-content">
+                            <div class="ensemble-spins" id="ensemble-spins">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Educational Help Panel -->
+                    <div class="help-panel" id="help-panel">
+                        <div class="help-panel-header" id="help-panel-header">
+                            <div class="help-panel-title">
+                                <i class="fas fa-question-circle"></i> NMR Quantum Guide
+                            </div>
+                            <i class="fas fa-chevron-up"></i>
+                        </div>
+                        <div class="help-panel-content">
+                            <div class="help-section">
+                                <h3>NMR Quantum Computing Basics</h3>
+                                <p>Nuclear Magnetic Resonance (NMR) quantum computing uses the spin states of atomic nuclei as qubits. Unlike single-particle qubits, NMR uses large ensembles of nuclear spins.</p>
+                                <ul>
+                                    <li>Operates at room temperature with billions of nuclear spins</li>
+                                    <li>Uses RF pulses to manipulate quantum states</li>
+                                    <li>Ideal for educational purposes and algorithm exploration</li>
+                                </ul>
+                            </div>
+                            <div class="help-section">
+                                <h3>NMR vs Traditional Qubits</h3>
+                                <p>NMR quantum computing differs from other quantum computing approaches:</p>
+                                <ul>
+                                    <li>Ensemble qubits instead of individual qubits</li>
+                                    <li>Highly mixed states (low polarization)</li>
+                                    <li>Long coherence times due to nuclear isolation</li>
+                                    <li>Limited scalability but excellent for learning</li>
+                                </ul>
+                            </div>
+                            <div class="help-section">
+                                <h3>Common NMR Operations</h3>
+                                <p>Quantum operations in NMR are implemented using:</p>
+                                <ul>
+                                    <li>π/2 pulses: 90° rotations (similar to √X, √Y gates)</li>
+                                    <li>π pulses: 180° rotations (similar to X, Y gates)</li>
+                                    <li>Delays: Allow spin evolution under J-coupling</li>
+                                    <li>Spin echo: Technique to mitigate decoherence</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Circuit watermark -->
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 28px; color: rgba(111, 66, 193, 0.1); font-weight: 600; letter-spacing: 2px; text-transform: uppercase; pointer-events: none;" aria-hidden="true">
+                        Katmai Quantum Design
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Frequency Controls -->
+        <div class="frequency-panel panel">
+            <div class="panel-header" id="frequency-panel-header">
+                <div class="panel-title">
+                    <i class="fas fa-broadcast-tower" aria-hidden="true"></i> Frequency Settings
+                </div>
+                <div class="panel-toggle">
+                    <i class="fas fa-chevron-up" aria-hidden="true"></i>
+                </div>
+            </div>
+            <div class="panel-content" id="frequency-panel-content">
+                <div class="frequency-controls">
+                    <div class="frequency-header">
+                        <div class="frequency-actions">
+                            <div class="frequency-action" data-tooltip="Reset to defaults" role="button" tabindex="0" aria-label="Reset to defaults">
+                                <i class="fas fa-redo-alt" aria-hidden="true"></i> Reset
+                            </div>
+                            <div class="frequency-action" data-tooltip="Save current settings" role="button" tabindex="0" aria-label="Save current settings">
+                                <i class="fas fa-save" aria-hidden="true"></i> Save
+                            </div>
+                        </div>
+                    </div>
+                    <div class="frequency-row">
+                        <div class="frequency-label">
+                            I Channel Frequency:
+                            <div class="frequency-value">28.03 MHz</div>
+                        </div>
+                        <div class="frequency-label">
+                            P Channel Frequency:
+                            <div class="frequency-value">11.35 MHz</div>
+                        </div>
+                        <div class="frequency-label">
+                            Phase
+                            <div class="phase-control">
+                                <div class="phase-min">0°</div>
+                                <div class="phase-slider" role="slider" aria-label="Phase Slider" aria-valuemin="0" aria-valuemax="360" aria-valuenow="108" tabindex="0">
+                                    <div class="phase-thumb"></div>
+                                </div>
+                                <div class="phase-max">360°</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pulse Sequence Visualization -->
+        <div class="pulse-panel panel">
+            <div class="panel-header" id="pulse-panel-header">
+                <div class="panel-title">
+                    <i class="fas fa-wave-square" aria-hidden="true"></i> Pulse Sequence Visualization
+                </div>
+                <div class="panel-toggle">
+                    <i class="fas fa-chevron-up" aria-hidden="true"></i>
+                </div>
+            </div>
+            <div class="panel-content" id="pulse-panel-content">
+                <div class="pulse-visualization-container">
+                    <div class="pulse-header">
+                        <div class="pulse-title">
+                            <i class="fas fa-wave-square" aria-hidden="true"></i> NMR Pulse Sequence
+                        </div>
+                        <div class="pulse-controls">
+                            <div class="pulse-control" data-tooltip="Zoom in" role="button" tabindex="0" aria-label="Zoom in">
+                                <i class="fas fa-search-plus" aria-hidden="true"></i> Zoom In
+                            </div>
+                            <div class="pulse-control" data-tooltip="Zoom out" role="button" tabindex="0" aria-label="Zoom out">
+                                <i class="fas fa-search-minus" aria-hidden="true"></i> Zoom Out
+                            </div>
+                            <div class="pulse-control" data-tooltip="Show time markers" role="button" tabindex="0" aria-label="Show time markers">
+                                <i class="fas fa-ruler-horizontal" aria-hidden="true"></i> Show Timing
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pulse-visualization">
+                        <div class="channel-label">H</div>
+                        <div class="pulse-sequence">
+                            <div class="pulse-block π2" style="left: 10%; width: 8%;" data-tooltip="π/2 pulse"></div>
+                            <div class="pulse-block delay" style="left: 20%; width: 8%;" data-tooltip="Delay: 100μs"></div>
+                            <div class="pulse-block π" style="left: 30%; width: 8%;" data-tooltip="π pulse"></div>
+                            <div class="pulse-block delay" style="left: 40%; width: 8%;" data-tooltip="Delay: 100μs"></div>
+                            <div class="pulse-block π2" style="left: 50%; width: 8%;" data-tooltip="π/2 pulse"></div>
+                            <!-- Time markers -->
+                            <div class="time-marker" style="left: 0%;">
+                                <div class="time-label">0μs</div>
+                            </div>
+                            <div class="time-marker" style="left: 25%;">
+                                <div class="time-label">250μs</div>
+                            </div>
+                            <div class="time-marker" style="left: 50%;">
+                                <div class="time-label">500μs</div>
+                            </div>
+                            <div class="time-marker" style="left: 75%;">
+                                <div class="time-label">750μs</div>
+                            </div>
+                            <div class="time-marker" style="left: 100%;">
+                                <div class="time-label">1000μs</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pulse-visualization">
+                        <div class="channel-label">P</div>
+                        <div class="pulse-sequence">
+                            <div class="pulse-block π4" style="left: 60%; width: 8%;" data-tooltip="π/4 pulse"></div>
+                            <div class="pulse-block" style="left: 70%; width: 15%;" data-tooltip="RF pulse"></div>
+                            <div class="pulse-block π" style="left: 87%; width: 10%;" data-tooltip="π pulse"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Spin Echo Visualization -->
+        <div class="echo-panel panel">
+            <div class="panel-header" id="echo-panel-header">
+                <div class="panel-title">
+                    <i class="fas fa-sync-alt" aria-hidden="true"></i> Spin Echo Sequence
+                </div>
+                <div class="panel-toggle">
+                    <i class="fas fa-chevron-up" aria-hidden="true"></i>
+                </div>
+            </div>
+            <div class="panel-content" id="echo-panel-content">
+                <div class="spin-echo-visualization">
+                    <div class="spin-echo-header">
+                        <div><i class="fas fa-sync-alt" aria-hidden="true"></i> NMR Spin Echo Sequence</div>
+                    </div>
+                    <div class="spin-echo-timing">
+                        <label for="echoTime">Echo Time (ms):</label>
+                        <input type="number" id="echoTime" value="20" step="1" min="1" aria-label="Echo Time in milliseconds">
+                        <label for="numEchoes">Number of Echoes:</label>
+                        <input type="number" id="numEchoes" value="1" min="1" max="10" step="1" aria-label="Number of Echoes">
+                    </div>
+                    <div class="spin-echo-diagram" role="img" aria-label="Spin Echo Sequence Diagram">
+                        <div class="spin-echo-pulse π2">
+                            <span class="spin-echo-label">90° pulse</span>
+                        </div>
+                        <div class="spin-echo-delay"></div>
+                        <div class="spin-echo-pulse π">
+                            <span class="spin-echo-label">180° pulse</span>
+                        </div>
+                        <div class="spin-echo-delay"></div>
+                        <div class="spin-echo-pulse π2">
+                            <span class="spin-echo-label">Signal</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Floating expand button -->
+        <button class="expand-grid-button" id="expandGridButton" aria-label="Toggle panels visibility">
+            <i class="fas fa-expand" aria-hidden="true"></i>
+        </button>
+        
+        <!-- App Footer -->
+        <div class="app-footer">
+            <div class="footer-left">
+                <button class="footer-button secondary" aria-label="Clear Circuit">
+                    <i class="fas fa-trash-alt" aria-hidden="true"></i> Clear Circuit
+                </button>
+                <button class="footer-button secondary" aria-label="Save State">
+                    <i class="fas fa-save" aria-hidden="true"></i> Save State
+                </button>
+            </div>
+            <div class="footer-right">
+                <button class="footer-button secondary" aria-label="Analyze Circuit">
+                    <i class="fas fa-chart-line" aria-hidden="true"></i> Analyze
+                </button>
+                <button class="footer-button primary" aria-label="Run Circuit">
+                    <i class="fas fa-play" aria-hidden="true"></i> Run Circuit
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+                    // Create scrollable page function (for mobile compatibility)
+            function enableScrolling() {
+                document.addEventListener('touchmove', function(e) {
+                    e.preventDefault();
+                }, { passive: false });
+                
+                const scrollableElements = document.querySelectorAll('.circuit-grid, .panel-content, .help-panel-content');
+                scrollableElements.forEach(elem => {
+                    elem.addEventListener('touchstart', function(e) {
+                        this.allowUp = (this.scrollTop > 0);
+                        this.allowDown = (this.scrollTop < this.scrollHeight - this.clientHeight);
+                        this.lastY = e.touches[0].clientY;
+                    });
+                    
+                    elem.addEventListener('touchmove', function(e) {
+                        const up = (e.touches[0].clientY > this.lastY);
+                        const down = !up;
+                        this.lastY = e.touches[0].clientY;
+                        
+                        if ((up && this.allowUp) || (down && this.allowDown)) {
+                            e.stopPropagation();
+                        } else {
+                            e.preventDefault();
+                        }
+                    }, { passive: false });
+                });
+            }
+            
+            // Initialize viewport meta for mobile compatibility
+            function setViewportForMobile() {
+                // Check if viewport meta exists, if not create it
+                let viewportMeta = document.querySelector('meta[name="viewport"]');
+                if (!viewportMeta) {
+                    viewportMeta = document.createElement('meta');
+                    viewportMeta.name = 'viewport';
+                    document.head.appendChild(viewportMeta);
+                }
+                viewportMeta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0';
+            }
+            
+            // NMR Quantum Circuit State Management
+            class NMRCircuitState {
+                constructor() {
+                    this.pulseSequence = [];
+                    this.parameters = {
+                        larmorFrequency: 500, // MHz
+                        pulseDuration: 10,    // μs
+                        t1: 1.0,              // s
+                        t2: 0.5,              // s
+                        echoTime: 20,         // ms
+                        numEchoes: 1,
+                        phase: 0              // degrees
+                    };
+                    this.state = {
+                        x: 0,
+                        y: 0,
+                        z: 1
+                    };
+                    this.ensembleStates = [];
+                    this.ensembleSize = 100;
+                    this.initializeEnsemble();
+                }
+
+            initializeEnsemble() {
+                // Create ensemble of spins with slight variations to simulate a real NMR ensemble
+                this.ensembleStates = [];
+                for (let i = 0; i < this.ensembleSize; i++) {
+                    // Add slight randomness to initial states to simulate thermal distribution
+                    const randomZ = 0.9 + Math.random() * 0.2; // z varies between 0.9 and 1.1
+                    const randomAngle = Math.random() * Math.PI * 2; // random orientation in xy plane
+                    const randomX = Math.sin(randomAngle) * 0.1; // small x component
+                    const randomY = Math.cos(randomAngle) * 0.1; // small y component
+                    
+                    this.ensembleStates.push({
+                        x: randomX,
+                        y: randomY,
+                        z: randomZ,
+                        // Add slight frequency variations to simulate realistic ensemble
+                        frequencyOffset: (Math.random() - 0.5) * 2, // Hz
+                        relaxationOffset: (Math.random() * 0.3) + 0.85 // T1/T2 multiplier
+                    });
+                }
+            }
+
+            validateParameters() {
+                if (this.parameters.larmorFrequency <= 0) {
+                    throw new Error('Larmor frequency must be positive');
+                }
+                if (this.parameters.pulseDuration <= 0) {
+                    throw new Error('Pulse duration must be positive');
+                }
+                if (this.parameters.t1 <= 0) {
+                    throw new Error('T1 must be positive');
+                }
+                if (this.parameters.t2 <= 0 || this.parameters.t2 > this.parameters.t1) {
+                    throw new Error('T2 must be positive and less than or equal to T1');
+                }
+            }
+
+            addPulse(type) {
+                this.validateParameters();
+                const pulse = {
+                    type: type,
+                    duration: this.parameters.pulseDuration,
+                    phase: this.parameters.phase,
+                    timestamp: Date.now()
+                };
+                this.pulseSequence.push(pulse);
+                this.updateState(pulse);
+                return pulse;
+            }
+
+            addDelay(duration = 100) { // duration in ms
+                this.validateParameters();
+                const delay = {
+                    type: 'delay',
+                    duration: duration,
+                    timestamp: Date.now()
+                };
+                this.pulseSequence.push(delay);
+                this.updateState(delay);
+                return delay;
+            }
+
+            addSpinEcho(echoTime = 20, numEchoes = 1) {
+                this.validateParameters();
+                
+                // Validate echo time
+                if (echoTime <= 0) {
+                    throw new Error('Echo time must be positive');
+                }
+                if (echoTime > 1000) { // Maximum 1 second echo time
+                    throw new Error('Echo time must be less than 1000ms');
+                }
+                
+                // Validate number of echoes
+                if (numEchoes < 1 || numEchoes > 10) {
+                    throw new Error('Number of echoes must be between 1 and 10');
+                }
+                
+                // Calculate total sequence duration
+                const totalDuration = echoTime * numEchoes;
+                if (totalDuration > 10000) { // Maximum 10 seconds total duration
+                    throw new Error('Total sequence duration must be less than 10 seconds');
+                }
+                
+                const sequence = [];
+                const originalState = { ...this.state };
+                const originalEnsembleStates = [...this.ensembleStates];
+                const originalSequenceLength = this.pulseSequence.length;
+                
+                try {
+                    // Add initial 90° pulse
+                    sequence.push(this.addPulse('π/2'));
+                    
+                    // Add delay and 180° pulse for each echo
+                    for (let i = 0; i < numEchoes; i++) {
+                        sequence.push(this.addDelay(echoTime / 2)); // Half of echo time
+                        sequence.push(this.addPulse('π'));
+                        sequence.push(this.addDelay(echoTime / 2)); // Half of echo time
+                    }
+                    
+                    // Update visualization
+                    this.updateEnsembleVisualization();
+                } catch (error) {
+                    // If there's an error, roll back the sequence and state
+                    const addedPulses = this.pulseSequence.length - originalSequenceLength;
+                    for (let i = 0; i < addedPulses; i++) {
+                        this.pulseSequence.pop();
+                    }
+                    this.state = originalState;
+                    this.ensembleStates = originalEnsembleStates;
+                    throw error;
+                }
+                
+                return sequence;
+            }
+
+            updateState(pulse) {
+                // Simulate NMR state evolution for average state
+                switch(pulse.type) {
+                    case 'π/2':
+                        const angle = Math.PI / 2;
+                        const phaseRad = (this.parameters.phase * Math.PI) / 180;
+                        this.state = {
+                            x: this.state.z * Math.cos(phaseRad),
+                            y: this.state.z * Math.sin(phaseRad),
+                            z: -this.state.x * Math.cos(phaseRad) - this.state.y * Math.sin(phaseRad)
+                        };
+                        break;
+                    case 'π':
+                        const piPhaseRad = (this.parameters.phase * Math.PI) / 180;
+                        this.state = {
+                            x: -this.state.x * Math.cos(piPhaseRad) - this.state.y * Math.sin(piPhaseRad),
+                            y: this.state.x * Math.sin(piPhaseRad) - this.state.y * Math.cos(piPhaseRad),
+                            z: -this.state.z
+                        };
+                        break;
+                    case 'π/4':
+                        const pi4Angle = Math.PI / 4;
+                        const pi4PhaseRad = (this.parameters.phase * Math.PI) / 180;
+                        this.state = {
+                            x: this.state.x * Math.cos(pi4Angle) + this.state.z * Math.sin(pi4Angle) * Math.cos(pi4PhaseRad),
+                            y: this.state.y * Math.cos(pi4Angle) + this.state.z * Math.sin(pi4Angle) * Math.sin(pi4PhaseRad),
+                            z: -this.state.x * Math.sin(pi4Angle) * Math.cos(pi4PhaseRad) - this.state.y * Math.sin(pi4Angle) * Math.sin(pi4PhaseRad) + this.state.z * Math.cos(pi4Angle)
+                        };
+                        break;
+                    case 'delay':
+                        // Simulate relaxation during delay
+                        const t = pulse.duration / 1000; // convert to seconds
+                        this.state = {
+                            x: this.state.x * Math.exp(-t / this.parameters.t2),
+                            y: this.state.y * Math.exp(-t / this.parameters.t2),
+                            z: 1 + (this.state.z - 1) * Math.exp(-t / this.parameters.t1)
+                        };
+                        break;
+                }
+                
+                // Update ensemble states with similar transformations but with variations
+                this.updateEnsembleStates(pulse);
+            }
+            
+            updateEnsembleStates(pulse) {
+                // Apply pulse to each spin in the ensemble with slight variations
+                this.ensembleStates.forEach(spin => {
+                    // Apply the same transformations as for average state, but with variations
+                    switch(pulse.type) {
+                        case 'π/2':
+                            const phaseRad = ((this.parameters.phase + (Math.random() - 0.5) * 5) * Math.PI) / 180; // 5° variation
+                            const tempX = spin.x;
+                            const tempY = spin.y;
+                            spin.x = spin.z * Math.cos(phaseRad) + (Math.random() - 0.5) * 0.05; // Add noise
+                            spin.y = spin.z * Math.sin(phaseRad) + (Math.random() - 0.5) * 0.05;
+                            spin.z = -tempX * Math.cos(phaseRad) - tempY * Math.sin(phaseRad) + (Math.random() - 0.5) * 0.05;
+                            break;
+                        case 'π':
+                            const piPhaseRad = ((this.parameters.phase + (Math.random() - 0.5) * 5) * Math.PI) / 180;
+                            const tempPiX = spin.x;
+                            spin.x = -spin.x * Math.cos(piPhaseRad) - spin.y * Math.sin(piPhaseRad) + (Math.random() - 0.5) * 0.05;
+                            spin.y = tempPiX * Math.sin(piPhaseRad) - spin.y * Math.cos(piPhaseRad) + (Math.random() - 0.5) * 0.05;
+                            spin.z = -spin.z + (Math.random() - 0.5) * 0.05;
+                            break;
+                        case 'π/4':
+                            const pi4Angle = (Math.PI / 4) * (0.95 + Math.random() * 0.1); // 5% variation
+                            const pi4PhaseRad = ((this.parameters.phase + (Math.random() - 0.5) * 5) * Math.PI) / 180;
+                            const tempPi4X = spin.x;
+                            const tempPi4Y = spin.y;
+                            const tempPi4Z = spin.z;
+                            spin.x = tempPi4X * Math.cos(pi4Angle) + tempPi4Z * Math.sin(pi4Angle) * Math.cos(pi4PhaseRad) + (Math.random() - 0.5) * 0.05;
+                            spin.y = tempPi4Y * Math.cos(pi4Angle) + tempPi4Z * Math.sin(pi4Angle) * Math.sin(pi4PhaseRad) + (Math.random() - 0.5) * 0.05;
+                            spin.z = -tempPi4X * Math.sin(pi4Angle) * Math.cos(pi4PhaseRad) - tempPi4Y * Math.sin(pi4Angle) * Math.sin(pi4PhaseRad) + tempPi4Z * Math.cos(pi4Angle) + (Math.random() - 0.5) * 0.05;
+                            break;
+                        case 'delay':
+                            // Simulate relaxation with individual variations
+                            const t = pulse.duration / 1000; // convert to seconds
+                            const t1Factor = this.parameters.t1 * spin.relaxationOffset;
+                            const t2Factor = this.parameters.t2 * spin.relaxationOffset;
+                            spin.x = spin.x * Math.exp(-t / t2Factor);
+                            spin.y = spin.y * Math.exp(-t / t2Factor);
+                            spin.z = 1 + (spin.z - 1) * Math.exp(-t / t1Factor);
+                            break;
+                    }
+                    
+                    // Apply additional random phase evolution due to frequency offsets during delays
+                    if (pulse.type === 'delay') {
+                        const t = pulse.duration / 1000; // seconds
+                        const phaseShift = 2 * Math.PI * spin.frequencyOffset * t;
+                        const tempX = spin.x;
+                        spin.x = tempX * Math.cos(phaseShift) - spin.y * Math.sin(phaseShift);
+                        spin.y = tempX * Math.sin(phaseShift) + spin.y * Math.cos(phaseShift);
+                    }
+                });
+                
+                // Update visualization
+                this.updateEnsembleVisualization();
+            }
+            
+            updateEnsembleVisualization() {
+                // Update the 3D visualization of ensemble spins
+                const container = document.getElementById('ensemble-spins');
+                if (!container) return;
+                
+                // Clear existing spins
+                container.innerHTML = '';
+                
+                // Create new spin representations based on current ensemble states
+                this.ensembleStates.forEach((spin, index) => {
+                    if (index < 20) { // Limit visualization to 20 spins for performance
+                        // Create spin container
+                        const spinElem = document.createElement('div');
+                        spinElem.className = 'ensemble-spin';
+                        
+                        // Position randomly in 3D space
+                        const radius = 60; // sphere radius
+                        const theta = Math.random() * Math.PI * 2;
+                        const phi = Math.acos(2 * Math.random() - 1);
+                        const x = radius * Math.sin(phi) * Math.cos(theta);
+                        const y = radius * Math.sin(phi) * Math.sin(theta);
+                        const z = radius * Math.cos(phi);
+                        
+                        // Apply 3D transform
+                        spinElem.style.transform = `translate3d(${x + 75}px, ${y + 75}px, ${z}px)`;
+                        
+                        // Create arrow
+                        const arrow = document.createElement('div');
+                        arrow.className = 'ensemble-arrow';
+                        
+                        // Set arrow direction based on spin state
+                        const normFactor = Math.sqrt(spin.x*spin.x + spin.y*spin.y + spin.z*spin.z);
+                        const normalizedX = spin.x / normFactor;
+                        const normalizedY = spin.y / normFactor;
+                        const normalizedZ = spin.z / normFactor;
+                        
+                        // Calculate rotation angle and axis for the arrow
+                        const angle = Math.acos(normalizedZ) * (180 / Math.PI);
+                        const rotationAxis = [normalizedY, -normalizedX, 0];
+                        if (Math.abs(normalizedZ) < 0.999) {
+                            arrow.style.setProperty('--x', rotationAxis[0]);
+                            arrow.style.setProperty('--y', rotationAxis[1]);
+                            arrow.style.setProperty('--z', rotationAxis[2]);
+                            arrow.style.setProperty('--angle', `${angle}deg`);
+                        }
+                        
+                        spinElem.appendChild(arrow);
+                        container.appendChild(spinElem);
+                    }
+                });
+            }
+
+            getStateVector() {
+                return {
+                    x: parseFloat(this.state.x.toFixed(4)),
+                    y: parseFloat(this.state.y.toFixed(4)),
+                    z: parseFloat(this.state.z.toFixed(4))
+                };
+            }
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set viewport for mobile compatibility
+            setViewportForMobile();
+            
+            // Enable proper scrolling behavior
+            enableScrolling();
+            
+            const nmrState = new NMRCircuitState();
+            
+            // Initialize ensemble visualization
+            nmrState.updateEnsembleVisualization();
+            
+            // Create grid cells for better interaction
+            function createGridCells() {
+                const container = document.getElementById('grid-cell-container');
+                const gridPositions = [];
+                
+                // Create grid positions for 4 qubits and 12 positions
+                for (let qubit = 0; qubit < 4; qubit++) {
+                    const yPos = 40 + (qubit * 65);
+                    for (let pos = 0; pos < 12; pos++) {
+                        const xPos = 175 + (pos * 50);
+                        gridPositions.push({ x: xPos, y: yPos });
+                    }
+                }
+                
+                // Clear existing cells if any
+                container.innerHTML = '';
+                
+                // Create cells
+                gridPositions.forEach(pos => {
+                    const cell = document.createElement('div');
+                    cell.className = 'grid-cell';
+                    cell.style.left = `${pos.x}px`;
+                    cell.style.top = `${pos.y}px`;
+                    cell.setAttribute('data-x', pos.x);
+                    cell.setAttribute('data-y', pos.y);
+                    cell.setAttribute('data-qubit', Math.floor((pos.y - 40) / 65));
+                    cell.setAttribute('data-position', Math.floor((pos.x - 175) / 50) + 1);
+                    
+                    // Add click handler to place selected gate
+                    cell.addEventListener('click', function(e) {
+                        const selectedGate = document.querySelector('.gate-button.selected');
+                        if (selectedGate) {
+                            placeGateAtCell(this, selectedGate);
+                        }
+                    });
+                    
+                    container.appendChild(cell);
+                });
+            }
+            
+            // Function to place a gate at a specific cell
+            function placeGateAtCell(cell, gateButton) {
+                const x = parseInt(cell.getAttribute('data-x'));
+                const y = parseInt(cell.getAttribute('data-y'));
+                const qubit = parseInt(cell.getAttribute('data-qubit'));
+                const gateText = gateButton.textContent.trim().split('\n')[0];
+                
+                // Check if there's already a gate at this position
+                const existingGates = document.querySelectorAll('.circuit-gate');
+                for (let gate of existingGates) {
+                    const gateX = parseInt(gate.style.left);
+                    const gateY = parseInt(gate.style.top);
+                    if (gateX === x && gateY === y) {
+                        showNotification("Position already occupied", "error");
+                        return;
+                    }
+                }
+                
+                // Create the new gate
+                const newGate = document.createElement('div');
+                newGate.className = 'circuit-gate';
+                newGate.textContent = gateText;
+                newGate.style.left = `${x}px`;
+                newGate.style.top = `${y}px`;
+                newGate.setAttribute('role', 'button');
+                newGate.setAttribute('tabindex', '0');
+                newGate.setAttribute('aria-label', `${gateText} Gate on Qubit ${qubit}`);
+                
+                // Check if this is an NMR ensemble qubit (Q0 or Q3)
+                if (qubit === 0 || qubit === 3) {
+                    newGate.classList.add('nmr-gate');
+                    
+                    // For NMR gates, update the NMR state
+                    if (gateText === 'X' || gateText === 'Rx') {
+                        nmrState.addPulse('π');
+                    } else if (gateText === 'Y' || gateText === 'Ry') {
+                        nmrState.addPulse('π');
+                    } else if (gateText === 'H') {
+                        nmrState.addPulse('π/2');
+                    } else if (gateText === '√X' || gateText === '√Y') {
+                        nmrState.addPulse('π/4');
+                    }
+                    
+                    // Update pulse visualization
+                    updatePulseVisualization();
+                }
+                
+                // Add to circuit
+                const circuitWrapper = document.querySelector('.circuit-wrapper');
+                circuitWrapper.appendChild(newGate);
+                
+                // Add click handler for selection
+                newGate.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Prevent triggering cell click
+                    document.querySelectorAll('.circuit-gate').forEach(g => 
+                        g.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+                
+                // Add keyboard support for selection
+                newGate.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        document.querySelectorAll('.circuit-gate').forEach(g => 
+                            g.classList.remove('selected'));
+                        this.classList.add('selected');
+                        e.preventDefault();
+                    }
+                    // Delete with Delete or Backspace key
+                    if (e.key === 'Delete' || e.key === 'Backspace') {
+                        if (confirm('Remove this gate?')) {
+                            this.remove();
+                        }
+                        e.preventDefault();
+                    }
+                });
+                
+                // Add drag handler for moving gates
+                newGate.addEventListener('mousedown', function(e) {
+                    if (e.button !== 0) return; // Only left click
+                    
+                    // Select this gate
+                    document.querySelectorAll('.circuit-gate').forEach(g => 
+                        g.classList.remove('selected'));
+                    this.classList.add('selected');
+                    
+                    this.classList.add('dragging');
+                    const startX = e.clientX;
+                    const startY = e.clientY;
+                    const startLeft = parseInt(this.style.left);
+                    const startTop = parseInt(this.style.top);
+                    
+                    const moveGate = function(e) {
+                        const dx = e.clientX - startX;
+                        const dy = e.clientY - startY;
+                        
+                        // Snap to grid
+                        const gridX = Math.floor((startLeft + dx - 175) / 50) * 50 + 175;
+                        const gridY = Math.floor((startTop + dy - 40) / 65) * 65 + 40;
+                        
+                        // Add maximum bounds checking
+                        const maxX = 175 + (11 * 50); // Maximum 12 columns
+                        const maxY = 40 + (3 * 65);  // Maximum 4 rows
+                        
+                        if (gridX >= 175 && gridX <= maxX && gridY >= 40 && gridY <= maxY) {
+                            this.style.left = `${gridX}px`;
+                            this.style.top = `${gridY}px`;
+                            // Update ARIA label
+                            this.setAttribute('aria-label', `${this.textContent.trim()} Gate on Qubit ${Math.floor((gridY - 40) / 65)}`);
+                        }
+                    }.bind(this);
+                    
+                    const stopMoving = function() {
+                        document.removeEventListener('mousemove', moveGate);
+                        document.removeEventListener('mouseup', stopMoving);
+                        this.classList.remove('dragging');
+                        
+                        // Check for conflicts after movement
+                        const x = parseInt(this.style.left);
+                        const y = parseInt(this.style.top);
+                        
+                        let hasConflict = false;
+                        const gates = document.querySelectorAll('.circuit-gate');
+                        for (let gate of gates) {
+                            if (gate === this) continue;
+                            
+                            const gateX = parseInt(gate.style.left);
+                            const gateY = parseInt(gate.style.top);
+                            
+                            if (gateX === x && gateY === y) {
+                                hasConflict = true;
+                                // Move back to original position
+                                this.style.left = `${startLeft}px`;
+                                this.style.top = `${startTop}px`;
+                                showNotification("Position already occupied", "error");
+                                break;
+                            }
+                        }
+                        
+                        // Update circuit state if no conflicts
+                        if (!hasConflict) {
+                            updateCircuitState();
+                            
+                            // Check if moved to NMR qubit
+                            const newQubit = Math.floor((parseInt(this.style.top) - 40) / 65);
+                            if (newQubit === 0 || newQubit === 3) {
+                                this.classList.add('nmr-gate');
+                            } else {
+                                this.classList.remove('nmr-gate');
+                            }
+                        }
+                    }.bind(this);
+
+                    // Add cleanup for page unload
+                    const cleanup = () => {
+                        document.removeEventListener('mousemove', moveGate);
+                        document.removeEventListener('mouseup', stopMoving);
+                        window.removeEventListener('beforeunload', cleanup);
+                        this.classList.remove('dragging');
+                    };
+                    
+                    window.addEventListener('beforeunload', cleanup);
+                    document.addEventListener('mousemove', moveGate);
+                    document.addEventListener('mouseup', stopMoving);
+                    e.preventDefault();
+                });
+                
+                // Show success notification
+                showNotification(`Added ${gateText} gate to qubit ${qubit}`, "success");
+            }
+            
+            // Initialize grid cells
+            createGridCells();
+            
+            // Update NMR parameters with validation
+            document.querySelectorAll('.nmr-parameter input').forEach(input => {
+                const errorMessage = input.nextElementSibling;
+                
+                input.addEventListener('change', function() {
+                    const param = this.id;
+                    const value = parseFloat(this.value);
+                    
+                    try {
+                        switch(param) {
+                            case 'larmorFreq':
+                                nmrState.parameters.larmorFrequency = value;
+                                break;
+                            case 'pulseDuration':
+                                nmrState.parameters.pulseDuration = value;
+                                break;
+                            case 'relaxationT1':
+                                nmrState.parameters.t1 = value;
+                                break;
+                            case 'relaxationT2':
+                                nmrState.parameters.t2 = value;
+                                break;
+                        }
+                        nmrState.validateParameters();
+                        errorMessage.classList.remove('visible');
+                    } catch (error) {
+                        errorMessage.textContent = error.message;
+                        errorMessage.classList.add('visible');
+                    }
+                });
+            });
+
+            // Phase slider functionality with keyboard support
+            const phaseSlider = document.querySelector('.phase-slider');
+            const phaseThumb = document.querySelector('.phase-thumb');
+            let isDragging = false;
+            let startX, sliderWidth;
+
+            phaseThumb.addEventListener('mousedown', function(e) {
+                isDragging = true;
+                startX = e.clientX;
+                sliderWidth = phaseSlider.offsetWidth;
+                
+                // Prevent text selection during drag
+                document.body.style.userSelect = 'none';
+                e.preventDefault();
+            });
+
+            document.addEventListener('mousemove', function(e) {
+                if (!isDragging) return;
+                
+                const deltaX = e.clientX - startX;
+                const percentMove = deltaX / sliderWidth;
+                
+                // Get current left position as percentage
+                const currentLeft = parseFloat(getComputedStyle(phaseThumb).left) / sliderWidth;
+                let newLeft = currentLeft + percentMove;
+                
+                // Clamp between 0 and 1
+                newLeft = Math.max(0, Math.min(1, newLeft));
+                
+                // Update thumb position
+                phaseThumb.style.left = `${newLeft * 100}%`;
+                
+                // Update NMR parameter
+                nmrState.parameters.phase = newLeft * 360; // Convert to degrees
+                
+                // Update ARIA value
+                phaseSlider.setAttribute('aria-valuenow', Math.round(nmrState.parameters.phase));
+                
+                // Reset for next move
+                startX = e.clientX;
+            });
+
+            document.addEventListener('mouseup', function() {
+                if (isDragging) {
+                    isDragging = false;
+                    document.body.style.userSelect = '';
+                }
+            });
+
+            // Add keyboard control for phase slider
+            phaseSlider.addEventListener('keydown', function(e) {
+                const step = 5; // Change in degrees
+                const currentPhase = parseFloat(this.getAttribute('aria-valuenow')) || 0;
+                let newPhase;
+                
+                switch(e.key) {
+                    case 'ArrowLeft':
+                        newPhase = Math.max(0, currentPhase - step);
+                        break;
+                    case 'ArrowRight':
+                        newPhase = Math.min(360, currentPhase + step);
+                        break;
+                    case 'Home':
+                        newPhase = 0;
+                        break;
+                    case 'End':
+                        newPhase = 360;
+                        break;
+                    default:
+                        return; // Exit if not relevant key
+                }
+                
+                e.preventDefault();
+                
+                // Update slider position
+                const newLeft = newPhase / 360;
+                phaseThumb.style.left = `${newLeft * 100}%`;
+                
+                // Update ARIA value
+                this.setAttribute('aria-valuenow', newPhase);
+                
+                // Update NMR parameter
+                nmrState.parameters.phase = newPhase;
+            });
+
+            // Pulse sequence visualization
+            function updatePulseVisualization() {
+                const sequences = document.querySelectorAll('.pulse-sequence');
+                
+                // Reset H channel sequence
+                const hSequence = sequences[0];
+                hSequence.innerHTML = '';
+                
+                // Add time markers
+                for (let i = 0; i <= 100; i += 25) {
+                    const timeMarker = document.createElement('div');
+                    timeMarker.className = 'time-marker';
+                    timeMarker.style.left = `${i}%`;
+                    
+                    const timeLabel = document.createElement('div');
+                    timeLabel.className = 'time-label';
+                    timeLabel.textContent = `${i * 10}μs`;
+                    
+                    timeMarker.appendChild(timeLabel);
+                    hSequence.appendChild(timeMarker);
+                }
+                
+                // Add pulse blocks
+                let position = 10;
+                nmrState.pulseSequence.forEach((pulse) => {
+                    const block = document.createElement('div');
+                    block.className = `pulse-block ${pulse.type === 'delay' ? 'delay' : pulse.type}`;
+                    block.style.left = `${position}%`;
+                    
+                    // Adjust width based on pulse type
+                    if (pulse.type === 'delay') {
+                        const width = Math.min(20, Math.max(5, pulse.duration / 50));
+                        block.style.width = `${width}%`; 
+                        block.setAttribute('data-tooltip', `Delay: ${pulse.duration}μs`);
+                    } else {
+                        block.style.width = `${pulse.type === 'π' ? 10 : 8}%`; 
+                        block.setAttribute('data-tooltip', `${pulse.type} pulse`);
+                    }
+                    
+                    hSequence.appendChild(block);
+                    position += 12; // Space out the pulse blocks
+                });
+            }
+
+            // Improved Gate drag and drop functionality
+            const gateButtons = document.querySelectorAll('.gate-button');
+            const circuitGrid = document.querySelector('.circuit-grid');
+            const dropIndicator = document.querySelector('.drop-indicator');
+            
+            let draggedGate = null;
+            
+            gateButtons.forEach(gate => {
+                gate.addEventListener('mousedown', function(e) {
+                    // Select the gate
+                    document.querySelectorAll('.gate-button').forEach(g => g.classList.remove('selected'));
+                    this.classList.add('selected');
+                    
+                    // Start drag operation
+                    draggedGate = this;
+                    
+                    // Create a clone for dragging visual
+                    const clone = this.cloneNode(true);
+                    clone.classList.add('dragging');
+                    document.body.appendChild(clone);
+                    
+                    // Position clone at cursor
+                    positionElement(clone, e.clientX, e.clientY);
+                    
+                    // Track mouse movement
+                    document.addEventListener('mousemove', dragMove);
+                    document.addEventListener('mouseup', dragEnd);
+                    
+                    e.preventDefault();
+                });
+                
+                // Keyboard support for gate selection
+                gate.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        // Select the gate
+                        document.querySelectorAll('.gate-button').forEach(g => g.classList.remove('selected'));
+                        this.classList.add('selected');
+                        e.preventDefault();
+                    }
+                });
+            });
+            
+            function dragMove(e) {
+                if (!draggedGate) return;
+                
+                // Move the dragged clone
+                const draggingElement = document.querySelector('.gate-button.dragging');
+                if (draggingElement) {
+                    positionElement(draggingElement, e.clientX, e.clientY);
+                }
+                
+                // Show drop indicator at grid position
+                const gridRect = circuitGrid.getBoundingClientRect();
+                if (e.clientX > gridRect.left && e.clientX < gridRect.right &&
+                    e.clientY > gridRect.top && e.clientY < gridRect.bottom) {
+                    
+                    // Calculate grid position
+                    const gridX = Math.floor((e.clientX - gridRect.left - 175) / 50) * 50 + 175;
+                    const gridY = Math.floor((e.clientY - gridRect.top - 40) / 65) * 65 + 40;
+                    
+                    if (gridX >= 175 && gridY >= 40) {
+                        dropIndicator.style.display = 'block';
+                        dropIndicator.style.left = `${gridX}px`;
+                        dropIndicator.style.top = `${gridY}px`;
+                    } else {
+                        dropIndicator.style.display = 'none';
+                    }
+                } else {
+                    dropIndicator.style.display = 'none';
+                }
+            }
+            
+            function dragEnd(e) {
+                if (!draggedGate) return;
+                
+                // Remove dragging clone
+                const draggingElement = document.querySelector('.gate-button.dragging');
+                if (draggingElement) {
+                    draggingElement.remove();
+                }
+                
+                // Check if we're over the grid and add gate if so
+                if (dropIndicator.style.display === 'block') {
+                    const gateText = draggedGate.textContent.trim().split('\n')[0];
+                    
+                    const newGate = document.createElement('div');
+                    newGate.className = 'circuit-gate';
+                    newGate.textContent = gateText;
+                    newGate.style.left = dropIndicator.style.left;
+                    newGate.style.top = dropIndicator.style.top;
+                    
+                    const qubit = Math.floor((parseInt(dropIndicator.style.top) - 40) / 65);
+                    
+                    // Check if this is an NMR ensemble qubit (Q0 or Q3)
+                    if (qubit === 0 || qubit === 3) {
+                        newGate.classList.add('nmr-gate');
+                        
+                        // For NMR gates, update the NMR state
+                        if (gateText === 'X' || gateText === 'Rx') {
+                            nmrState.addPulse('π');
+                        } else if (gateText === 'Y' || gateText === 'Ry') {
+                            nmrState.addPulse('π');
+                        } else if (gateText === 'H') {
+                            nmrState.addPulse('π/2');
+                        } else if (gateText === '√X' || gateText === '√Y') {
+                            nmrState.addPulse('π/4');
+                        }
+                        
+                        // Update pulse visualization
+                        updatePulseVisualization();
+                    }
+                    
+                    newGate.setAttribute('role', 'button');
+                    newGate.setAttribute('tabindex', '0');
+                    newGate.setAttribute('aria-label', `${gateText} Gate on Qubit ${qubit}`);
+                    
+                    // Add to circuit
+                    const circuitWrapper = document.querySelector('.circuit-wrapper');
+                    circuitWrapper.appendChild(newGate);
+                    
+                    // Add click handler for selection
+                    newGate.addEventListener('click', function(e) {
+                        e.stopPropagation(); // Prevent triggering cell click
+                        document.querySelectorAll('.circuit-gate').forEach(g => 
+                            g.classList.remove('selected'));
+                        this.classList.add('selected');
+                    });
+                    
+                    // Add keyboard support for selection
+                    newGate.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            document.querySelectorAll('.circuit-gate').forEach(g => 
+                                g.classList.remove('selected'));
+                            this.classList.add('selected');
+                            e.preventDefault();
+                        }
+                        // Delete with Delete or Backspace key
+                        if (e.key === 'Delete' || e.key === 'Backspace') {
+                            if (confirm('Remove this gate?')) {
+                                this.remove();
+                            }
+                            e.preventDefault();
+                        }
+                    });
+                    
+                    // Add drag handler for moving gates
+                    newGate.addEventListener('mousedown', function(e) {
+                        if (e.button !== 0) return; // Only left click
+                        
+                        // Select this gate
+                        document.querySelectorAll('.circuit-gate').forEach(g => 
+                            g.classList.remove('selected'));
+                        this.classList.add('selected');
+                        
+                        this.classList.add('dragging');
+                        const startX = e.clientX;
+                        const startY = e.clientY;
+                        const startLeft = parseInt(this.style.left);
+                        const startTop = parseInt(this.style.top);
+                        
+                        const moveGate = function(e) {
+                            const dx = e.clientX - startX;
+                            const dy = e.clientY - startY;
+                            
+                            // Snap to grid
+                            const gridX = Math.floor((startLeft + dx - 175) / 50) * 50 + 175;
+                            const gridY = Math.floor((startTop + dy - 40) / 65) * 65 + 40;
+                            
+                            // Add maximum bounds checking
+                            const maxX = 175 + (11 * 50); // Maximum 12 columns
+                            const maxY = 40 + (3 * 65);  // Maximum 4 rows
+                            
+                            if (gridX >= 175 && gridX <= maxX && gridY >= 40 && gridY <= maxY) {
+                                this.style.left = `${gridX}px`;
+                                this.style.top = `${gridY}px`;
+                                // Update ARIA label
+                                const newQubit = Math.floor((gridY - 40) / 65);
+                                this.setAttribute('aria-label', `${this.textContent.trim()} Gate on Qubit ${newQubit}`);
+                                
+                                // Update gate appearance if moving to/from NMR qubit
+                                if (newQubit === 0 || newQubit === 3) {
+                                    this.classList.add('nmr-gate');
+                                } else {
+                                    this.classList.remove('nmr-gate');
+                                }
+                            }
+                        }.bind(this);
+                        
+                        const stopMoving = function() {
+                            document.removeEventListener('mousemove', moveGate);
+                            document.removeEventListener('mouseup', stopMoving);
+                            this.classList.remove('dragging');
+                            
+                            // Check for conflicts after movement
+                            const x = parseInt(this.style.left);
+                            const y = parseInt(this.style.top);
+                            
+                            let hasConflict = false;
+                            const gates = document.querySelectorAll('.circuit-gate');
+                            for (let gate of gates) {
+                                if (gate === this) continue;
+                                
+                                const gateX = parseInt(gate.style.left);
+                                const gateY = parseInt(gate.style.top);
+                                
+                                if (gateX === x && gateY === y) {
+                                    hasConflict = true;
+                                    // Move back to original position
+                                    this.style.left = `${startLeft}px`;
+                                    this.style.top = `${startTop}px`;
+                                    showNotification("Position already occupied", "error");
+                                    break;
+                                }
+                            }
+                            
+                            // Update circuit state if no conflicts
+                            if (!hasConflict) {
+                                updateCircuitState();
+                            }
+                        }.bind(this);
+
+                        // Add cleanup for page unload
+                        const cleanup = () => {
+                            document.removeEventListener('mousemove', moveGate);
+                            document.removeEventListener('mouseup', stopMoving);
+                            window.removeEventListener('beforeunload', cleanup);
+                            this.classList.remove('dragging');
+                        };
+                        
+                        window.addEventListener('beforeunload', cleanup);
+                        document.addEventListener('mousemove', moveGate);
+                        document.addEventListener('mouseup', stopMoving);
+                        e.preventDefault();
+                    });
+                    
+                    showNotification(`Added ${gateText} gate to qubit ${qubit}`, "success");
+                }
+                
+                // Reset drag tracking and remove event listeners
+                draggedGate = null;
+                document.removeEventListener('mousemove', dragMove);
+                document.removeEventListener('mouseup', dragEnd);
+                
+                // Hide drop indicator
+                dropIndicator.style.display = 'none';
+            }
+            
+            // Helper function to position an element at cursor position
+            function positionElement(element, x, y) {
+                // Position element so its center is at the cursor
+                const rect = element.getBoundingClientRect();
+                element.style.left = `${x - rect.width / 2}px`;
+                element.style.top = `${y - rect.height / 2}px`;
+            }
+            
+            // Update circuit state based on placed gates
+            function updateCircuitState() {
+                // Implementation depends on how you want to track and use circuit state
+                // This could update your quantum state simulation or prepare data for backend processing
+                console.log('Circuit state updated');
+            }
+            
+            // Show notification
+            function showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.innerHTML = `<i class="fas ${type === 'error' ? 'fa-exclamation-circle' : type === 'success' ? 'fa-check-circle' : 'fa-info-circle'}"></i> ${message}`;
+                document.body.appendChild(notification);
+                
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    notification.style.opacity = '0';
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000);
+            }
+            
+            // Panel toggle functionality
+            document.querySelectorAll('.panel-header').forEach(header => {
+                header.addEventListener('click', function() {
+                    const panel = this.closest('.panel');
+                    const content = panel.querySelector('.panel-content');
+                    const toggle = this.querySelector('.panel-toggle i');
+                    
+                    if (content.classList.contains('collapsed')) {
+                        content.classList.remove('collapsed');
+                        toggle.classList.remove('collapsed');
+                    } else {
+                        content.classList.add('collapsed');
+                        toggle.classList.add('collapsed');
+                    }
+                });
+            });
+            
+            // Help panel toggle
+            document.getElementById('help-panel-header').addEventListener('click', function() {
+                const panel = document.getElementById('help-panel');
+                if (panel.classList.contains('collapsed')) {
+                    panel.classList.remove('collapsed');
+                    this.querySelector('i.fas.fa-chevron-up').style.transform = 'rotate(0)';
+                } else {
+                    panel.classList.add('collapsed');
+                    this.querySelector('i.fas.fa-chevron-up').style.transform = 'rotate(180deg)';
+                }
+            });
+            
+            // Full grid mode toggle
+            document.getElementById('fullGridToggle').addEventListener('click', function() {
+                document.querySelector('.app-container').classList.toggle('full-grid-mode');
+                this.innerHTML = document.querySelector('.app-container').classList.contains('full-grid-mode') 
+                    ? '<i class="fas fa-compress-alt" aria-hidden="true"></i> Normal View'
+                    : '<i class="fas fa-expand-alt" aria-hidden="true"></i> Maximize Grid';
+            });
+            
+            // Floating expand button for easy toggle
+            document.getElementById('expandGridButton').addEventListener('click', function() {
+                document.querySelector('.app-container').classList.toggle('full-grid-mode');
+                document.getElementById('fullGridToggle').innerHTML = document.querySelector('.app-container').classList.contains('full-grid-mode') 
+                    ? '<i class="fas fa-compress-alt" aria-hidden="true"></i> Normal View'
+                    : '<i class="fas fa-expand-alt" aria-hidden="true"></i> Maximize Grid';
+            });
+            
+            // Buttons for NMR specific operations
+            document.querySelectorAll('.pulse-sequence-controls button').forEach(button => {
+                // Pulse sequence button click handlers are already defined in the onclick attributes
+                // Here we can add additional functionality if needed
+            });
+            
+            // Initialize with a few sample pulses
+            nmrState.addPulse('π/2');
+            nmrState.addDelay(100);
+            nmrState.addPulse('π');
+            updatePulseVisualization();
+            
+            // Handle Spin Echo parameters
+            document.getElementById('echoTime').addEventListener('change', function() {
+                nmrState.parameters.echoTime = parseFloat(this.value);
+            });
+            
+            document.getElementById('numEchoes').addEventListener('change', function() {
+                nmrState.parameters.numEchoes = parseInt(this.value);
+            });
+            
+            // Create initial ensemble visualization
+            createEnsembleVisualization();
+            
+            function createEnsembleVisualization() {
+                const container = document.getElementById('ensemble-spins');
+                
+                // Create initial random spins
+                for (let i = 0; i < 20; i++) {
+                    const spinElem = document.createElement('div');
+                    spinElem.className = 'ensemble-spin';
+                    
+                    // Position randomly in 3D space
+                    const radius = 60;
+                    const theta = Math.random() * Math.PI * 2;
+                    const phi = Math.acos(2 * Math.random() - 1);
+                    const x = radius * Math.sin(phi) * Math.cos(theta);
+                    const y = radius * Math.sin(phi) * Math.sin(theta);
+                    const z = radius * Math.cos(phi);
+                    
+                    spinElem.style.transform = `translate3d(${x + 75}px, ${y + 75}px, ${z}px)`;
+                    
+                    // Create arrow (mostly pointing up initially)
+                    const arrow = document.createElement('div');
+                    arrow.className = 'ensemble-arrow';
+                    
+                    // Initial state is mostly along z-axis
+                    const randomDeviation = Math.random() * 20; // degrees
+                    const randomAngle = Math.random() * 360; // around z-axis
+                    
+                    // Convert to radians
+                    const deviationRad = randomDeviation * (Math.PI / 180);
+                    const angleRad = randomAngle * (Math.PI / 180);
+                    
+                    // Calculate x, y components for the small deviation
+                    const xComp = Math.sin(deviationRad) * Math.cos(angleRad);
+                    const yComp = Math.sin(deviationRad) * Math.sin(angleRad);
+                    const zComp = Math.cos(deviationRad);
+                    
+                    arrow.style.setProperty('--x', yComp);
+                    arrow.style.setProperty('--y', -xComp);
+                    arrow.style.setProperty('--z', 0);
+                    arrow.style.setProperty('--angle', `${randomDeviation}deg`);
+                    
+                    spinElem.appendChild(arrow);
+                    container.appendChild(spinElem);
+                }
+            }
+            
+            // Run circuit button
+            document.querySelector('.footer-button.primary').addEventListener('click', function() {
+                // Simulate running the circuit
+                showNotification("Running quantum circuit...", "info");
+                
+                // Highlight the circuit wrapper to indicate activity
+                const circuitWrapper = document.querySelector('.circuit-wrapper');
+                circuitWrapper.style.boxShadow = '0 0 0 2px var(--accent-color), 0 0 20px rgba(161, 86, 247, 0.4)';
+                
+                // Apply a series of pulses for demonstration
+                setTimeout(() => {
+                    nmrState.addPulse('π/2');
+                    updatePulseVisualization();
+                    
+                    setTimeout(() => {
+                        nmrState.addDelay(200);
+                        updatePulseVisualization();
+                        
+                        setTimeout(() => {
+                            nmrState.addPulse('π');
+                            updatePulseVisualization();
+                            
+                            setTimeout(() => {
+                                circuitWrapper.style.boxShadow = '';
+                                showNotification("Circuit execution complete!", "success");
+                            }, 1000);
+                        }, 800);
+                    }, 800);
+                }, 1000);
+            });
+            
+            // Debounce function to limit resize event calls
+            const debounce = (func, wait) => {
+                let timeout;
+                return (...args) => {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(this, args), wait);
+                };
+            };
+
+            // Add resize event listener to fix layout issues
+            const handleResize = debounce(() => {
+                const circuitGrid = document.querySelector('.circuit-grid');
+                if (!circuitGrid) return;
+                
+                const isMobile = window.innerWidth < 800;
+                circuitGrid.style.overflowX = isMobile ? 'auto' : '';
+                circuitGrid.style.overflowY = isMobile ? 'auto' : '';
+            }, 250);
+
+            // Initialize layout with proper error handling
+            const initializeLayout = () => {
+                if (!document.body) return;
+                
+                requestAnimationFrame(() => {
+                    try {
+                        // Smooth scroll to top
+                        window.scrollTo({
+                            top: 0,
+                            behavior: 'smooth'
+                        });
+                        
+                        // Handle mobile layout
+                        if (window.innerWidth < 800) {
+                            const panels = Array.from(document.querySelectorAll('.panel-content'));
+                            if (!panels.length) return;
+                            
+                            panels.forEach(panel => {
+                                const circuitEditor = panel.closest('.circuit-editor');
+                                if (circuitEditor) return;
+                                
+                                panel.classList.add('collapsed');
+                                const panelElement = panel.closest('.panel');
+                                if (!panelElement) return;
+                                
+                                const toggle = panelElement.querySelector('.panel-toggle i');
+                                if (toggle) {
+                                    toggle.classList.add('collapsed');
+                                }
+                            });
+                        }
+                    } catch (error) {
+                        console.warn('Layout initialization error:', error);
+                    }
+                });
+            };
+
+            // Initialize when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initializeLayout);
+            } else {
+                initializeLayout();
+            }
+
+            // Add resize listener
+            window.addEventListener('resize', handleResize);
+
+            // Cleanup on page unload
+            window.addEventListener('unload', () => {
+                window.removeEventListener('resize', handleResize);
+            });
+        });
+    </script>
+</body>
+</html>
